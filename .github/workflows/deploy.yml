@@ -24,6 +24,8 @@ jobs:
         with:
           package: 'apxu/samosbor/map'
           modules: 'app'
+          meta: |
+            apxu/samosbor/map https://github.com/ApxuTechTop/samosbor
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
