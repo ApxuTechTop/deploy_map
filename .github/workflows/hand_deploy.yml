@@ -12,7 +12,7 @@ on:
         required: true
         default: 'app'
       repo:
-        description: 'Repository URL (e.g., https://github.com/user/repo)'
+        description: 'Repository URL without domain (e.g., user/repo)'
         required: true
       branch:
         description: 'Branch to build'
