@@ -1,0 +1,59 @@
+name: Hand Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package path (e.g., apxu/samosbor/map)'
+        required: true
+        default: 'apxu/samosbor/map'
+      modules:
+        description: 'Modules to build (space-separated)'
+        required: true
+        default: 'app'
+      repo:
+        description: 'Repository URL (e.g., https://github.com/user/repo)'
+        required: true
+      branch:
+        description: 'Branch to build'
+        required: true
+        default: 'main'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: build
+    steps:
+      - name: Build app
+        uses: ApxuTechTop/mam_build@master2
+        with:
+          package: ${{ github.event.inputs.package }}
+          modules: ${{ github.event.inputs.modules }}
+          repo: ${{ github.event.inputs.repo }}
+          branch: ${{ github.event.inputs.branch }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '${{ github.event.inputs.package }}/${{ github.event.inputs.modules }}/-'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
